@@ -31,6 +31,47 @@ func CreateTables(db *sql.DB) error {
 		login_last TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY (user_id) REFERENCES users_e(id) ON DELETE CASCADE
 	);
+
+	-- Table: departments
+	CREATE TABLE IF NOT EXISTS departments (
+		id BIGSERIAL PRIMARY KEY,
+		name VARCHAR(255) NOT NULL UNIQUE,
+		created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);
+
+	-- Table: emp_users
+	CREATE TABLE IF NOT EXISTS emp_users (
+		id BIGSERIAL PRIMARY KEY,
+		hr_emp_id VARCHAR(50) NOT NULL UNIQUE,
+		full_name VARCHAR(255) NOT NULL,
+		department_id BIGINT REFERENCES departments(id),
+		cid VARCHAR(13),
+		created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);
+
+	-- Table: attendance_logs
+	CREATE TABLE IF NOT EXISTS attendance_logs (
+		id BIGSERIAL PRIMARY KEY,
+		emp_id BIGINT NOT NULL REFERENCES emp_users(id) ON DELETE CASCADE,
+		work_date DATE NOT NULL,
+		scan_times JSONB NOT NULL DEFAULT '[]',
+		created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		UNIQUE(emp_id, work_date)
+	);
+
+	-- Table: upload_logs
+	CREATE TABLE IF NOT EXISTS upload_logs (
+		id BIGSERIAL PRIMARY KEY,
+		uploaded_by BIGINT REFERENCES users_e(id),
+		file_name VARCHAR(255) NOT NULL,
+		total_rows INT NOT NULL DEFAULT 0,
+		processed INT NOT NULL DEFAULT 0,
+		errors INT NOT NULL DEFAULT 0,
+		status VARCHAR(20) NOT NULL DEFAULT 'success',
+		created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);
 	`
 
 	_, err := db.Exec(schema)

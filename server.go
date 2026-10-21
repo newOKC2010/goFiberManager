@@ -23,6 +23,7 @@ func main() {
 	cors.CorsConfig(app)
 
 	routes.SetupAuthRoutes(app, conn.DB)
+	routes.SetupUploadRoutes(app, conn.DB)
 
 	log.Printf("Server started on port: %s", port)
 
