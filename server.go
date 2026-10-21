@@ -6,6 +6,7 @@ import (
 	conn "manager/src/database"
 	loadenv "manager/src/loadenv"
 	cors "manager/src/middleware/cors"
+	routes "manager/src/routes"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,10 +22,9 @@ func main() {
 	app := fiber.New()
 	cors.CorsConfig(app)
 
-	log.Printf("Server started on port: %s", port)
+	routes.SetupAuthRoutes(app, conn.DB)
 
-	// routes.SetupAuthRoutes(app, conn.DB)
-	// routes.SetupQancRoutes(app, conn.DB)
+	log.Printf("Server started on port: %s", port)
 
 	if err := app.Listen(":" + port); err != nil {
 		log.Fatal(err)

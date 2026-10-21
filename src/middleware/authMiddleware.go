@@ -17,7 +17,7 @@ func AuthGuards(db *sql.DB, allowedRoles []string) fiber.Handler {
 			}
 			return c.Status(code).JSON(fiber.Map{"success": false, "message": auth.Message})
 		}
-		c.Locals("user_qanc", auth.User)
+		c.Locals("users", auth.User)
 		return c.Next()
 	}
 }
