@@ -30,9 +30,9 @@ func GetUserByID(db *sql.DB, userID int64) (*UserQANCInfo, error) {
 	user := &UserQANCInfo{}
 
 	err := db.QueryRow(
-		`SELECT id, cid, email, role, status FROM users_e WHERE id = $1`,
+		`SELECT id, cid, full_name, email, role, status FROM users_e WHERE id = $1`,
 		userID,
-	).Scan(&user.ID, &user.CID, &user.Email, &user.Role, &user.Status)
+	).Scan(&user.ID, &user.CID, &user.FullName, &user.Email, &user.Role, &user.Status)
 
 	if err != nil {
 		return nil, err

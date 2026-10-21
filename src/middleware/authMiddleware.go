@@ -33,11 +33,11 @@ func authVerify(c *fiber.Ctx, db *sql.DB, allowedRoles []string) Response {
 		return Response{Success: false, Message: "token ไม่ถูกต้องหรือหมดอายุ"}
 	}
 
-	if err := VerifyToken(db, claims.UserQANCID, token); err != nil {
+	if err := VerifyToken(db, claims.UserID, token); err != nil {
 		return Response{Success: false, Message: "token หมดอายุหรือไม่ถูกต้อง"}
 	}
 
-	user, err := GetUserByID(db, claims.UserQANCID)
+	user, err := GetUserByID(db, claims.UserID)
 	if err != nil {
 		return Response{Success: false, Message: "ไม่พบผู้ใช้งาน"}
 	}
