@@ -12,9 +12,9 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // มี token อยู่หน้า /auth → redirect ไป /manager/dashboard
+  // มี token อยู่หน้า /auth → redirect ไป /manager
   if (pathname === '/auth' && token) {
-    return NextResponse.redirect(new URL('/manager/dashboard', request.url));
+    return NextResponse.redirect(new URL('/manager', request.url));
   }
 
   // ป้องกัน cache หน้า /manager/*

@@ -15,30 +15,13 @@ interface SidebarProps {
 }
 
 const ALL_MENUS = [
-  { 
-    name: 'ข้อมูลน้ำ', 
-    icon: 'water_drop', 
+  {
+    name: 'ข้อมูลการเข้างาน',
+    icon: 'schedule',
     children: [
-      { name: 'Dashboard', path: '/ecobase/water/dashboard', icon: 'Bar_Chart_4_Bars' },
-      { name: 'จัดการข้อมูล', path: '/ecobase/water/manage', icon: 'edit_note' }
+      { name: 'อัพโหลด Excel', path: '/manager/upload', icon: 'upload_file' },
     ]
   },
-  { 
-    name: 'ข้อมูลขยะ', 
-    icon: 'delete', 
-    children: [
-      { name: 'Dashboard', path: '/ecobase/waste/dashboard', icon: 'Bar_Chart_4_Bars' },
-      { name: 'จัดการข้อมูล', path: '/ecobase/waste/manage', icon: 'edit_note' }
-    ]
-  },
-  { 
-    name: 'ถังดับเพลิง', 
-    icon: 'fire_extinguisher', 
-    children: [
-      { name: 'จัดการถัง', path: '/ecobase/fireExt/manage', icon: 'edit_note' },
-      { name: 'บันทึกการตรวจ', path: '/ecobase/fireExt/check', icon: 'checklist' }
-    ]
-  }
 ];
 
 export default function Sidebar({ user }: SidebarProps) {

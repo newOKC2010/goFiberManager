@@ -34,7 +34,7 @@ export const Modal = ({
         setTimeout(() => {
           setShouldRender(false);
           setIsClosing(false);
-        }, 500);
+        }, 200);
       }
     }
   }, [isOpen, shouldRender]);
@@ -43,7 +43,7 @@ export const Modal = ({
     setIsClosing(true);
     setTimeout(() => {
       onClose();
-    }, 500);
+    }, 200);
   };
 
   if (!shouldRender) return null;

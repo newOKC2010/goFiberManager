@@ -25,10 +25,10 @@ export default function SidebarHeader({ user, onClose }: SidebarHeaderProps) {
       </button>
 
       <div className="flex items-center gap-3">
-        <span className="material-symbols-outlined text-emerald-500 text-3xl" style={{ fontVariationSettings: "'wght' 700" }}>
-          energy_savings_leaf
+        <span className="material-symbols-outlined text-indigo-500 text-3xl" style={{ fontVariationSettings: "'wght' 700" }}>
+          groups
         </span>
-        <h1 className="text-xl font-bold text-gray-800">E-COBASE</h1>
+        <h1 className="text-xl font-bold text-gray-800">HR MANAGER</h1>
       </div>
       
       {user && (
