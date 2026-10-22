@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: image-manager-backend
+    container_name: image-container-manager-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./.env:/app/.env:ro
+    ports:
+      - "${PORT:-8080}:${PORT:-8080}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
