@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: image-manager-backend
-    container_name: image-container-manager-backend
+    container_name: container-manager-backend
     restart: unless-stopped
     env_file:
       - .env
