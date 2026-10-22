@@ -14,7 +14,7 @@ interface SidebarProps {
   user: UserInfo | null;
 }
 
-const ALL_MENUS = [
+const ADMIN_MENUS = [
   {
     name: 'ข้อมูลการเข้างาน',
     icon: 'schedule',
@@ -32,7 +32,22 @@ const ALL_MENUS = [
   },
 ];
 
-export default function Sidebar({ user }: SidebarProps) {
+const USER_MENUS = [
+  {
+    name: 'ข้อมูลของฉัน',
+    icon: 'person',
+    children: [
+      { name: 'รายการ Scan', path: '/user/attendance', icon: 'schedule' },
+    ]
+  },
+];
+
+interface SidebarProps {
+  user: UserInfo | null;
+  role?: string;
+}
+
+export default function Sidebar({ user, role }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +55,7 @@ export default function Sidebar({ user }: SidebarProps) {
   const closeSidebar = () => setIsOpen(false);
   const toggleSidebar = () => setIsOpen(true);
 
-  const filteredMenus = ALL_MENUS;
+  const filteredMenus = role === 'user' ? USER_MENUS : ADMIN_MENUS;
 
   return (
     <>

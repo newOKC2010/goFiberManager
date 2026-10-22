@@ -45,7 +45,8 @@ export default function AuthPage() {
     if (result.success) {
       setShowOtpModal(false);
       setShowLoginSuccess(true);
-      setTimeout(() => router.push('/manager'), 800);
+      const role = result.data?.user_info?.role;
+      setTimeout(() => router.push(role === 'admin' ? '/manager' : '/user'), 800);
     }
   };
 

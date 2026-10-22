@@ -13,6 +13,7 @@ export default function ManagerLayout({ children }: { children: React.ReactNode 
   useEffect(() => {
     checkAuth().then(({ success, user }) => {
       if (!success) return router.replace('/auth');
+      if (user?.role !== 'admin') return router.replace('/user');
       setUser(user ?? null);
       setLoading(false);
     });

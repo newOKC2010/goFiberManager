@@ -10,6 +10,9 @@ export const API_ENDPOINTS = {
   UPLOAD: {
     EXCEL: '/upload/excel',
   },
+  USER: {
+    ATTENDANCE: '/user/attendance',
+  },
   EMP: {
     LIST: '/emp/list',
     ATTENDANCE: '/emp/attendance',
