@@ -19,10 +19,11 @@ func ParseEmpQuery(c *fiber.Ctx) utils.EmpListQuery {
 	}
 
 	return utils.EmpListQuery{
-		Page:   page,
-		Limit:  limit,
-		Name:   c.Query("name", ""),
-		DeptID: deptID,
-		HasCID: c.Query("has_cid", ""),
+		Page:         page,
+		Limit:        limit,
+		Name:         c.Query("name", ""),
+		DeptID:       deptID,
+		HasCID:       c.Query("has_cid", ""),
+		StatusFilter: c.Query("status", ""),
 	}
 }

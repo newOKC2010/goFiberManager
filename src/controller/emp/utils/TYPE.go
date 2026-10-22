@@ -13,11 +13,12 @@ type EmpUser struct {
 }
 
 type EmpListQuery struct {
-	Page   int    // default 1
-	Limit  int    // 5 | 10 | 0 (all)
-	Name   string // filter full_name ILIKE
-	DeptID int64  // 0 = no filter
-	HasCID string // "true" | "false" | "" (no filter)
+	Page         int    // default 1
+	Limit        int    // 5 | 10 | 0 (all)
+	Name         string // filter full_name ILIKE
+	DeptID       int64  // 0 = no filter
+	HasCID       string // "true" | "false" | "" (no filter)
+	StatusFilter string // "true" | "false" | "" (no filter)
 }
 
 type Pagination struct {

@@ -23,6 +23,11 @@ func GetManageList(db *sql.DB, q utils.EmpListQuery) (utils.ManageListResponse, 
 		args = append(args, q.DeptID)
 		idx++
 	}
+	if q.StatusFilter == "true" {
+		where = append(where, "e.status = true")
+	} else if q.StatusFilter == "false" {
+		where = append(where, "e.status = false")
+	}
 
 	whereClause := strings.Join(where, " AND ")
 
