@@ -10,4 +10,11 @@ export const API_ENDPOINTS = {
   UPLOAD: {
     EXCEL: '/upload/excel',
   },
+  EMP: {
+    LIST: '/emp/list',
+    DEPARTMENTS: '/emp/departments',
+    UPDATE_CID: '/emp/cid',
+    MANAGE_LIST: '/emp/manage/list',
+    MANAGE_TOGGLE: '/emp/manage/toggle',
+  },
 }

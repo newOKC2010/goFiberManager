@@ -12,23 +12,21 @@ interface TableMobileProps<T> {
   data: T[];
   onEdit?: (item: T) => void;
   onDelete?: (item: T) => void;
+  onPrint?: (item: T) => void;
   onToggleStatus?: (item: T) => void;
   getItemId: (item: T) => string | number;
   getItemStatus?: (item: T) => boolean;
   statusButtonText?: string;
+  activeStatusText?: string;
+  inactiveStatusText?: string;
+  toggleBothWays?: boolean;
 }
 
 export default function TableMobile<T>({
-  columns,
-  data,
-  onEdit,
-  onDelete,
-  onToggleStatus,
-  getItemId,
-  getItemStatus,
-  statusButtonText
+  columns, data, onEdit, onDelete, onPrint, onToggleStatus,
+  getItemId, getItemStatus, statusButtonText, activeStatusText, inactiveStatusText, toggleBothWays,
 }: TableMobileProps<T>) {
-  const hasActions = onEdit || onDelete || onToggleStatus;
+  const hasActions = onEdit || onDelete || onPrint || onToggleStatus;
 
   return (
     <div className="lg:hidden space-y-4">
@@ -50,12 +48,10 @@ export default function TableMobile<T>({
           {hasActions && (
             <div className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-gray-100">
               <TableActions
-                item={item}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                onToggleStatus={onToggleStatus}
-                getItemStatus={getItemStatus}
-                statusButtonText={statusButtonText}
+                item={item} onEdit={onEdit} onDelete={onDelete} onPrint={onPrint}
+                onToggleStatus={onToggleStatus} getItemStatus={getItemStatus}
+                statusButtonText={statusButtonText} activeStatusText={activeStatusText}
+                inactiveStatusText={inactiveStatusText} toggleBothWays={toggleBothWays}
               />
             </div>
           )}

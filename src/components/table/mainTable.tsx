@@ -18,10 +18,14 @@ interface TableProps<T> {
   loading?: boolean;
   onEdit?: (item: T) => void;
   onDelete?: (item: T) => void;
+  onPrint?: (item: T) => void;
   onToggleStatus?: (item: T) => void;
   getItemId: (item: T) => string | number;
   getItemStatus?: (item: T) => boolean;
   statusButtonText?: string;
+  activeStatusText?: string;
+  inactiveStatusText?: string;
+  toggleBothWays?: boolean;
 }
 
 export default function Table<T>({
@@ -30,10 +34,14 @@ export default function Table<T>({
   loading = false,
   onEdit,
   onDelete,
+  onPrint,
   onToggleStatus,
   getItemId,
   getItemStatus,
-  statusButtonText
+  statusButtonText,
+  activeStatusText,
+  inactiveStatusText,
+  toggleBothWays,
 }: TableProps<T>) {
   if (loading) return <TableLoading />;
   if (data.length === 0) return <TableEmpty />;
@@ -41,24 +49,16 @@ export default function Table<T>({
   return (
     <>
       <TableDesktop
-        columns={columns}
-        data={data}
-        onEdit={onEdit}
-        onDelete={onDelete}
-        onToggleStatus={onToggleStatus}
-        getItemId={getItemId}
-        getItemStatus={getItemStatus}
-        statusButtonText={statusButtonText}
+        columns={columns} data={data} onEdit={onEdit} onDelete={onDelete} onPrint={onPrint}
+        onToggleStatus={onToggleStatus} getItemId={getItemId} getItemStatus={getItemStatus}
+        statusButtonText={statusButtonText} activeStatusText={activeStatusText}
+        inactiveStatusText={inactiveStatusText} toggleBothWays={toggleBothWays}
       />
       <TableMobile
-        columns={columns}
-        data={data}
-        onEdit={onEdit}
-        onDelete={onDelete}
-        onToggleStatus={onToggleStatus}
-        getItemId={getItemId}
-        getItemStatus={getItemStatus}
-        statusButtonText={statusButtonText}
+        columns={columns} data={data} onEdit={onEdit} onDelete={onDelete} onPrint={onPrint}
+        onToggleStatus={onToggleStatus} getItemId={getItemId} getItemStatus={getItemStatus}
+        statusButtonText={statusButtonText} activeStatusText={activeStatusText}
+        inactiveStatusText={inactiveStatusText} toggleBothWays={toggleBothWays}
       />
     </>
   );

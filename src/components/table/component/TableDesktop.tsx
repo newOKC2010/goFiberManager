@@ -12,23 +12,21 @@ interface TableDesktopProps<T> {
   data: T[];
   onEdit?: (item: T) => void;
   onDelete?: (item: T) => void;
+  onPrint?: (item: T) => void;
   onToggleStatus?: (item: T) => void;
   getItemId: (item: T) => string | number;
   getItemStatus?: (item: T) => boolean;
   statusButtonText?: string;
+  activeStatusText?: string;
+  inactiveStatusText?: string;
+  toggleBothWays?: boolean;
 }
 
 export default function TableDesktop<T>({
-  columns,
-  data,
-  onEdit,
-  onDelete,
-  onToggleStatus,
-  getItemId,
-  getItemStatus,
-  statusButtonText
+  columns, data, onEdit, onDelete, onPrint, onToggleStatus,
+  getItemId, getItemStatus, statusButtonText, activeStatusText, inactiveStatusText, toggleBothWays,
 }: TableDesktopProps<T>) {
-  const hasActions = onEdit || onDelete || onToggleStatus;
+  const hasActions = onEdit || onDelete || onPrint || onToggleStatus;
 
   return (
     <div className="hidden lg:block overflow-x-auto">
@@ -56,12 +54,10 @@ export default function TableDesktop<T>({
               {hasActions && (
                 <td className="px-4 py-3 text-center">
                   <TableActions
-                    item={item}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
-                    onToggleStatus={onToggleStatus}
-                    getItemStatus={getItemStatus}
-                    statusButtonText={statusButtonText}
+                    item={item} onEdit={onEdit} onDelete={onDelete} onPrint={onPrint}
+                    onToggleStatus={onToggleStatus} getItemStatus={getItemStatus}
+                    statusButtonText={statusButtonText} activeStatusText={activeStatusText}
+                    inactiveStatusText={inactiveStatusText} toggleBothWays={toggleBothWays}
                   />
                 </td>
               )}

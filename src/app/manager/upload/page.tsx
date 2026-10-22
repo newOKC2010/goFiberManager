@@ -15,7 +15,7 @@ export default function UploadPage() {
     if (!f) return;
     const ext = f.name.split('.').pop()?.toLowerCase();
     if (ext !== 'xlsx' && ext !== 'xls') {
-      Swal.fire('ไฟล์ไม่ถูกต้อง', 'กรุณาเลือกไฟล์ Excel (.xlsx หรือ .xls)', 'warning');
+      Swal.fire({ icon: 'warning', title: '<span style="font-weight:700">ไฟล์ไม่ถูกต้อง</span>', html: '<span style="font-weight:700">กรุณาเลือกไฟล์ Excel (.xlsx หรือ .xls)</span>', confirmButtonColor: '#4f46e5' });
       return;
     }
     setFile(f);
@@ -41,7 +41,7 @@ export default function UploadPage() {
       });
       handleReset();
     } else {
-      Swal.fire({ icon: 'error', title: 'อัพโหลดไม่สำเร็จ', text: res.message, confirmButtonColor: '#4f46e5' });
+      Swal.fire({ icon: 'error', title: '<span style="font-weight:700">อัพโหลดไม่สำเร็จ</span>', html: `<span style="font-weight:700">${res.message}</span>`, confirmButtonColor: '#4f46e5' });
     }
   };
 

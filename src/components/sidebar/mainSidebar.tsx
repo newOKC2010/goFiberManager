@@ -22,6 +22,14 @@ const ALL_MENUS = [
       { name: 'อัพโหลด Excel', path: '/manager/upload', icon: 'upload_file' },
     ]
   },
+  {
+    name: 'จัดการพนักงาน',
+    icon: 'badge',
+    children: [
+      { name: 'รายชื่อพนักงาน', path: '/manager/emp', icon: 'group' },
+      { name: 'จัดการสถานะ', path: '/manager/emp/manage', icon: 'manage_accounts' },
+    ]
+  },
 ];
 
 export default function Sidebar({ user }: SidebarProps) {
