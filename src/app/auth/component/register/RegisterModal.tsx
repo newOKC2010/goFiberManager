@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { Modal } from '@/components/modal/mainModal';
 import { Button } from '@/components/buttonClick/mainButton';
 import { InputText } from '@/components/input/text/mainInputText';
+import CidInput from '@/components/input/cid/mainInputCID';
 import { RegisterModalProps, RegisterErrors } from '@/app/auth/component/register/utils/types';
-import { onCidChange, onNameChange, onEmailChange, handleRegisterSubmit } from '@/app/auth/component/register/handler/handlerRegister';
+import { onNameChange, onEmailChange, handleRegisterSubmit } from '@/app/auth/component/register/handler/handlerRegister';
 
 export const RegisterModal = ({ isOpen, onClose }: RegisterModalProps) => {
   const [cid, setCid] = useState('');
@@ -49,17 +50,8 @@ export const RegisterModal = ({ isOpen, onClose }: RegisterModalProps) => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1">
           <label className="text-xs font-bold text-gray-700 ml-1">เลขบัตรประชาชน</label>
-          <InputText
-            type="text"
-            value={cid}
-            onChange={(e) => onCidChange(e.target.value, setCid, setErrors)}
-            placeholder="เลขบัตรประชาชน 13 หลัก"
-            inputMode="numeric"
-            maxLength={13}
-            disabled={loading}
-            icon="badge"
-            error={errors.cid}
-          />
+          <CidInput value={cid} onChange={(val) => { setCid(val); setErrors(e => ({ ...e, cid: '' })); }} size="md" disabled={loading} />
+          {errors.cid && <p className="text-xs text-red-500 font-bold ml-1">{errors.cid}</p>}
         </div>
 
         <div className="space-y-1">
