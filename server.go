@@ -25,6 +25,7 @@ func main() {
 	routes.SetupAuthRoutes(app, conn.DB)
 	routes.SetupUploadRoutes(app, conn.DB)
 	routes.SetupEmpRoutes(app, conn.DB)
+	routes.SetupUserRoutes(app, conn.DB)
 
 	log.Printf("Server started on port: %s", port)
 
