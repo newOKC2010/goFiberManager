@@ -23,6 +23,7 @@ Res:  { "token": "<jwt>" }
 Body: { "cid": "1234567890123", "full_name": "ชื่อ นามสกุล", "email": "user@mail.com" }
 Res:  { "message": "..." }
 ```
+> ต้องมี CID ใน `emp_users` ก่อน มิฉะนั้น error "กรุณาติดต่อ Admin HR"
 
 ### GET `/auth/status` — ตรวจสอบ token `🔒`
 ```
@@ -48,22 +49,22 @@ Res: { "message": "...", "log": { "file_name", "total_rows", "processed", "error
 
 ## Emp `/emp` `🔒 admin`
 
-### GET `/emp/list` — รายชื่อพนักงาน
+### GET `/emp/list` — รายชื่อพนักงาน (status=true เท่านั้น)
 ```
-Header: Authorization: Bearer <token>
-Query:
-  page     = 1          (หน้า)
-  limit    = 5|10|0     (0 = ทั้งหมด)
-  name     = สมชาย      (กรองชื่อ)
-  dept_id  = 3          (กรองแผนก)
-  has_cid  = true|false (กรองสถานะ CID)
+Query: page, limit, name, dept_id, has_cid, date_from, date_to
+  - ไม่ส่ง date → default วันล่าสุดในระบบ
+  - ส่ง name/dept/cid แต่ไม่ส่ง date → ดึงทุกวัน
+  - ส่ง date range → กรองตาม range
 
-Res: {
-  "total_count": 50,
-  "total_pages": 5,
-  "current_page": 1,
-  "data": [{ "hr_emp_id", "full_name", "dept_name", "cid" }]
-}
+Res: { total_count, total_pages, current_page,
+       data: [{ hr_emp_id, full_name, dept_name, cid, work_date, scan_times }] }
+```
+
+### GET `/emp/attendance` — ข้อมูลการเข้างาน
+```
+Query: page, limit, name, dept_id, date_from, date_to
+Res: { total_count, total_pages, current_page,
+       data: [{ hr_emp_id, full_name, dept_name, work_date, scan_times }] }
 ```
 
 ### GET `/emp/departments` — รายการแผนก
@@ -80,18 +81,34 @@ Res:  { "message": "อัพเดท CID สำเร็จ" }
 
 ### GET `/emp/manage/list` — รายชื่อพนักงานทั้งหมด (รวมคนออก)
 ```
-Query: page, limit, name, dept_id  (ไม่มี has_cid)
-Res: {
-  "total_count", "total_pages", "current_page",
-  "data": [{ "hr_emp_id", "full_name", "dept_name", "status" }]
-}
+Query: page, limit, name, dept_id, status=true|false
+Res: { ..., data: [{ hr_emp_id, full_name, dept_name, status }] }
 ```
 
 ### PATCH `/emp/manage/toggle` — เปิด/ปิดสถานะพนักงาน
 ```json
 Body: { "hr_emp_id": "222" }
-Res:  { "message": "อัพเดทสถานะสำเร็จ", "status": true/false }
+Res:  { "message": "...", "status": true/false }
 ```
+
+---
+
+## User `/user` `🔒 user/admin`
+
+### GET `/user/attendance` — ข้อมูลการเข้างานของตัวเอง
+```
+Query: page, limit, date_from, date_to
+  - ไม่ส่ง date → default วันล่าสุดของตัวเอง
+Res: { total_count, total_pages, current_page,
+       data: [{ work_date, scan_times }] }
+```
+
+---
+
+## Logic เพิ่มเติม
+- **Login**: ถ้า `emp_users.status = false` → error "คุณได้ทำการลาออกเรียบร้อยแล้ว..."
+- **Register**: ตรวจ CID ใน `emp_users` ก่อน → ถ้าไม่มี error "กรุณาติดต่อ Admin HR"
+- **Upload Excel**: sync `department_id` อัตโนมัติจาก column C ทุกครั้งที่ upload
 
 ---
 
