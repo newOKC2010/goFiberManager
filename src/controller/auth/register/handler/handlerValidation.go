@@ -33,9 +33,9 @@ func ValidateFullName(fullName string) error {
 		return fmt.Errorf("กรุณากรอกชื่อ-นามสกุล")
 	}
 	fullName = strings.TrimSpace(fullName)
-	matched, err := regexp.MatchString(`^[\p{Thai}\s]+$`, fullName)
+	matched, err := regexp.MatchString(`^[\p{Thai}\s.]+$`, fullName)
 	if err != nil || !matched {
-		return fmt.Errorf("ชื่อ-นามสกุลต้องเป็นภาษาไทยเท่านั้น")
+		return fmt.Errorf("ชื่อ-นามสกุลต้องเป็นภาษาไทยเท่านั้น (ใส่ . ได้)")
 	}
 	return nil
 }

@@ -44,6 +44,15 @@ func RequestOTP(db *sql.DB) fiber.Handler {
 			})
 		}
 
+		// ตรวจสอบสถานะพนักงานใน emp_users
+		empActive, err := serviceLogin.CheckEmpStatus(db, user.CID)
+		if err == nil && !empActive {
+			return c.Status(403).JSON(loginUtils.Response{
+				Success: false,
+				Message: "คุณได้ทำการลาออกเรียบร้อยแล้ว ไม่สามารถเข้าระบบได้ หากผิดพลาดกรุณาติดต่อ Admin HR",
+			})
+		}
+
 		otpCode, err := handlerLogin.GenerateOTP()
 		if err != nil {
 			log.Printf("Generate OTP ล้มเหลว: %v", err)

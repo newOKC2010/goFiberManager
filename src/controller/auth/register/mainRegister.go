@@ -42,6 +42,22 @@ func Register(db *sql.DB) fiber.Handler {
 			})
 		}
 
+		// ตรวจว่า CID มีในระบบ HR (emp_users) หรือไม่
+		empExists, err := handlerRegister.CheckCIDInEmpUsers(db, req.CID)
+		if err != nil {
+			log.Printf("CheckCIDInEmpUsers error: %v", err)
+			return c.Status(500).JSON(registerUtils.RegisterResponse{
+				Success: false,
+				Message: "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล",
+			})
+		}
+		if !empExists {
+			return c.Status(400).JSON(registerUtils.RegisterResponse{
+				Success: false,
+				Message: "หมายเลขบัตรประชาชนของคุณยังไม่มีในระบบ กรุณาติดต่อ Admin HR เพื่อลงทะเบียนหมายเลขบัตรประชาชน",
+			})
+		}
+
 		cidExists, err := handlerRegister.CheckCIDExists(db, req.CID)
 		if err != nil {
 			log.Printf("CheckCIDExists error: %v", err)
