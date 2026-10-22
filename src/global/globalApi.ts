@@ -12,6 +12,7 @@ export const API_ENDPOINTS = {
   },
   EMP: {
     LIST: '/emp/list',
+    ATTENDANCE: '/emp/attendance',
     DEPARTMENTS: '/emp/departments',
     UPDATE_CID: '/emp/cid',
     MANAGE_LIST: '/emp/manage/list',

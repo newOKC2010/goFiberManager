@@ -10,6 +10,7 @@ interface Column<T> {
 interface TableMobileProps<T> {
   columns: Column<T>[];
   data: T[];
+  onView?: (item: T) => void;
   onEdit?: (item: T) => void;
   onDelete?: (item: T) => void;
   onPrint?: (item: T) => void;
@@ -23,10 +24,10 @@ interface TableMobileProps<T> {
 }
 
 export default function TableMobile<T>({
-  columns, data, onEdit, onDelete, onPrint, onToggleStatus,
+  columns, data, onView, onEdit, onDelete, onPrint, onToggleStatus,
   getItemId, getItemStatus, statusButtonText, activeStatusText, inactiveStatusText, toggleBothWays,
 }: TableMobileProps<T>) {
-  const hasActions = onEdit || onDelete || onPrint || onToggleStatus;
+  const hasActions = onView || onEdit || onDelete || onPrint || onToggleStatus;
 
   return (
     <div className="lg:hidden space-y-4">
@@ -48,7 +49,7 @@ export default function TableMobile<T>({
           {hasActions && (
             <div className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-gray-100">
               <TableActions
-                item={item} onEdit={onEdit} onDelete={onDelete} onPrint={onPrint}
+                item={item} onView={onView} onEdit={onEdit} onDelete={onDelete} onPrint={onPrint}
                 onToggleStatus={onToggleStatus} getItemStatus={getItemStatus}
                 statusButtonText={statusButtonText} activeStatusText={activeStatusText}
                 inactiveStatusText={inactiveStatusText} toggleBothWays={toggleBothWays}

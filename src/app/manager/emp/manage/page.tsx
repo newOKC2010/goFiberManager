@@ -62,6 +62,14 @@ export default function EmpManagePage() {
 
   const handleSearch = () => load({ ...currentParams(), page: 1 });
   const handlePageChange = (page: number) => load({ ...currentParams(), page });
+  const handleLimitChange = (val: string) => {
+    setLimit(val);
+    load({ ...currentParams(), limit: Number(val), page: 1 });
+  };
+  const handleReset = () => {
+    setNameInput(''); setDeptID(''); setStatusFilter(''); setLimit('10');
+    load({ page: 1, limit: 10 });
+  };
 
   const handleToggle = async (emp: EmpManage) => {
     const action = emp.status ? 'ปลดออก' : 'กลับเข้างาน';
@@ -109,14 +117,18 @@ export default function EmpManagePage() {
           />
           <Dropdown label="แผนก" icon="business" options={deptOptions} value={deptID} onChange={setDeptID} searchable />
           <Dropdown label="สถานะ" icon="toggle_on" options={STATUS_OPTIONS} value={statusFilter} onChange={setStatusFilter} />
-          <Dropdown label="แสดงต่อหน้า" icon="format_list_numbered" options={LIMIT_OPTIONS} value={limit} onChange={setLimit} />
+          <Dropdown label="แสดงต่อหน้า" icon="format_list_numbered" options={LIMIT_OPTIONS} value={limit} onChange={handleLimitChange} />
         </div>
-        <button
-          onClick={handleSearch}
-          className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-lg">search</span>ค้นหา
-        </button>
+        <div className="flex gap-2">
+          <button onClick={handleSearch}
+            className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors cursor-pointer">
+            <span className="material-symbols-outlined text-lg">search</span>ค้นหา
+          </button>
+          <button onClick={handleReset}
+            className="flex items-center gap-2 px-5 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors cursor-pointer">
+            <span className="material-symbols-outlined text-lg">restart_alt</span>ล้างค่า
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">

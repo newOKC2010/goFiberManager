@@ -16,6 +16,7 @@ interface TableProps<T> {
   columns: Column<T>[];
   data: T[];
   loading?: boolean;
+  onView?: (item: T) => void;
   onEdit?: (item: T) => void;
   onDelete?: (item: T) => void;
   onPrint?: (item: T) => void;
@@ -32,6 +33,7 @@ export default function Table<T>({
   columns,
   data,
   loading = false,
+  onView,
   onEdit,
   onDelete,
   onPrint,
@@ -49,13 +51,13 @@ export default function Table<T>({
   return (
     <>
       <TableDesktop
-        columns={columns} data={data} onEdit={onEdit} onDelete={onDelete} onPrint={onPrint}
+        columns={columns} data={data} onView={onView} onEdit={onEdit} onDelete={onDelete} onPrint={onPrint}
         onToggleStatus={onToggleStatus} getItemId={getItemId} getItemStatus={getItemStatus}
         statusButtonText={statusButtonText} activeStatusText={activeStatusText}
         inactiveStatusText={inactiveStatusText} toggleBothWays={toggleBothWays}
       />
       <TableMobile
-        columns={columns} data={data} onEdit={onEdit} onDelete={onDelete} onPrint={onPrint}
+        columns={columns} data={data} onView={onView} onEdit={onEdit} onDelete={onDelete} onPrint={onPrint}
         onToggleStatus={onToggleStatus} getItemId={getItemId} getItemStatus={getItemStatus}
         statusButtonText={statusButtonText} activeStatusText={activeStatusText}
         inactiveStatusText={inactiveStatusText} toggleBothWays={toggleBothWays}

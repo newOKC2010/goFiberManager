@@ -10,6 +10,7 @@ interface Column<T> {
 interface TableDesktopProps<T> {
   columns: Column<T>[];
   data: T[];
+  onView?: (item: T) => void;
   onEdit?: (item: T) => void;
   onDelete?: (item: T) => void;
   onPrint?: (item: T) => void;
@@ -23,10 +24,10 @@ interface TableDesktopProps<T> {
 }
 
 export default function TableDesktop<T>({
-  columns, data, onEdit, onDelete, onPrint, onToggleStatus,
+  columns, data, onView, onEdit, onDelete, onPrint, onToggleStatus,
   getItemId, getItemStatus, statusButtonText, activeStatusText, inactiveStatusText, toggleBothWays,
 }: TableDesktopProps<T>) {
-  const hasActions = onEdit || onDelete || onPrint || onToggleStatus;
+  const hasActions = onView || onEdit || onDelete || onPrint || onToggleStatus;
 
   return (
     <div className="hidden lg:block overflow-x-auto">
@@ -54,7 +55,7 @@ export default function TableDesktop<T>({
               {hasActions && (
                 <td className="px-4 py-3 text-center">
                   <TableActions
-                    item={item} onEdit={onEdit} onDelete={onDelete} onPrint={onPrint}
+                    item={item} onView={onView} onEdit={onEdit} onDelete={onDelete} onPrint={onPrint}
                     onToggleStatus={onToggleStatus} getItemStatus={getItemStatus}
                     statusButtonText={statusButtonText} activeStatusText={activeStatusText}
                     inactiveStatusText={inactiveStatusText} toggleBothWays={toggleBothWays}

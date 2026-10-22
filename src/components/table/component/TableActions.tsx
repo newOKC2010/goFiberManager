@@ -1,5 +1,6 @@
 interface TableActionsProps<T> {
   item: T;
+  onView?: (item: T) => void;
   onEdit?: (item: T) => void;
   onDelete?: (item: T) => void;
   onPrint?: (item: T) => void;
@@ -13,6 +14,7 @@ interface TableActionsProps<T> {
 
 export default function TableActions<T>({
   item,
+  onView,
   onEdit,
   onDelete,
   onPrint,
@@ -48,31 +50,32 @@ export default function TableActions<T>({
           {label}
         </button>
       )}
+      {onView && (
+        <button onClick={() => onView(item)}
+          className="p-2 text-teal-600 rounded-xl cursor-pointer"
+          title="ดูรายละเอียด">
+          <span className="material-symbols-outlined text-2xl">visibility</span>
+        </button>
+      )}
       {onEdit && (
-        <button
-          onClick={() => onEdit(item)}
-          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
-          title="แก้ไข"
-        >
-          <span className="material-symbols-outlined text-xl">edit</span>
+        <button onClick={() => onEdit(item)}
+          className="p-2 text-amber-500 rounded-xl cursor-pointer"
+          title="แก้ไข">
+          <span className="material-symbols-outlined text-2xl">edit</span>
         </button>
       )}
       {onPrint && (
-        <button
-          onClick={() => onPrint(item)}
-          className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
-          title="พิมพ์"
-        >
-          <span className="material-symbols-outlined text-xl">print</span>
+        <button onClick={() => onPrint(item)}
+          className="p-2 text-violet-600 rounded-xl cursor-pointer"
+          title="พิมพ์">
+          <span className="material-symbols-outlined text-2xl">print</span>
         </button>
       )}
       {onDelete && (
-        <button
-          onClick={() => onDelete(item)}
-          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-          title="ลบ"
-        >
-          <span className="material-symbols-outlined text-xl">delete</span>
+        <button onClick={() => onDelete(item)}
+          className="p-2 text-red-500 rounded-xl cursor-pointer"
+          title="ลบ">
+          <span className="material-symbols-outlined text-2xl">delete</span>
         </button>
       )}
     </div>
