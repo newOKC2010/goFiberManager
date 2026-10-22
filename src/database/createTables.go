@@ -46,6 +46,7 @@ func CreateTables(db *sql.DB) error {
 		full_name VARCHAR(255) NOT NULL,
 		department_id BIGINT REFERENCES departments(id),
 		cid VARCHAR(13),
+		status BOOLEAN NOT NULL DEFAULT true,
 		created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);

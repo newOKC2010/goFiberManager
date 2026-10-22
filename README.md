@@ -72,6 +72,27 @@ Header: Authorization: Bearer <token>
 Res: { "data": [{ "id", "name" }] }
 ```
 
+### PATCH `/emp/cid` — แก้ไข CID พนักงาน
+```json
+Body: { "hr_emp_id": "222", "cid": "1234567890123" }
+Res:  { "message": "อัพเดท CID สำเร็จ" }
+```
+
+### GET `/emp/manage/list` — รายชื่อพนักงานทั้งหมด (รวมคนออก)
+```
+Query: page, limit, name, dept_id  (ไม่มี has_cid)
+Res: {
+  "total_count", "total_pages", "current_page",
+  "data": [{ "hr_emp_id", "full_name", "dept_name", "status" }]
+}
+```
+
+### PATCH `/emp/manage/toggle` — เปิด/ปิดสถานะพนักงาน
+```json
+Body: { "hr_emp_id": "222" }
+Res:  { "message": "อัพเดทสถานะสำเร็จ", "status": true/false }
+```
+
 ---
 
 ## Rate Limit

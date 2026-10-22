@@ -11,7 +11,7 @@ import (
 func GetEmpList(db *sql.DB, q utils.EmpListQuery) (utils.EmpListResponse, error) {
 	args := []any{}
 	idx := 1
-	where := []string{"1=1"}
+	where := []string{"e.status = true"}
 
 	if q.Name != "" {
 		where = append(where, fmt.Sprintf("e.full_name ILIKE $%d", idx))

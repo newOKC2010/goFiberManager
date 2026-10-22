@@ -30,3 +30,15 @@ type EmpListResponse struct {
 	Pagination
 	Data []EmpUser `json:"data"`
 }
+
+type EmpManage struct {
+	HrEmpID  string  `json:"hr_emp_id"`
+	FullName string  `json:"full_name"`
+	DeptName *string `json:"dept_name"`
+	Status   bool    `json:"status"`
+}
+
+type ManageListResponse struct {
+	Pagination
+	Data []EmpManage `json:"data"`
+}
