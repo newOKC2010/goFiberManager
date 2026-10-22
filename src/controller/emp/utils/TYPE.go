@@ -6,19 +6,23 @@ type Department struct {
 }
 
 type EmpUser struct {
-	HrEmpID  string  `json:"hr_emp_id"`
-	FullName string  `json:"full_name"`
-	DeptName *string `json:"dept_name"`
-	CID      *string `json:"cid"`
+	HrEmpID   string   `json:"hr_emp_id"`
+	FullName  string   `json:"full_name"`
+	DeptName  *string  `json:"dept_name"`
+	CID       *string  `json:"cid"`
+	WorkDate  *string  `json:"work_date"`
+	ScanTimes []string `json:"scan_times"`
 }
 
 type EmpListQuery struct {
-	Page         int    // default 1
-	Limit        int    // 5 | 10 | 0 (all)
-	Name         string // filter full_name ILIKE
-	DeptID       int64  // 0 = no filter
-	HasCID       string // "true" | "false" | "" (no filter)
-	StatusFilter string // "true" | "false" | "" (no filter)
+	Page         int
+	Limit        int
+	Name         string
+	DeptID       int64
+	HasCID       string // "true" | "false" | ""
+	StatusFilter string // "true" | "false" | ""
+	DateFrom     string // YYYY-MM-DD
+	DateTo       string // YYYY-MM-DD
 }
 
 type Pagination struct {
@@ -42,4 +46,26 @@ type EmpManage struct {
 type ManageListResponse struct {
 	Pagination
 	Data []EmpManage `json:"data"`
+}
+
+type AttendanceRecord struct {
+	HrEmpID   string   `json:"hr_emp_id"`
+	FullName  string   `json:"full_name"`
+	DeptName  *string  `json:"dept_name"`
+	WorkDate  string   `json:"work_date"`
+	ScanTimes []string `json:"scan_times"`
+}
+
+type AttendanceQuery struct {
+	Page     int
+	Limit    int
+	Name     string
+	DeptID   int64
+	DateFrom string // YYYY-MM-DD
+	DateTo   string // YYYY-MM-DD
+}
+
+type AttendanceListResponse struct {
+	Pagination
+	Data []AttendanceRecord `json:"data"`
 }

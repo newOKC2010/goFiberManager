@@ -25,5 +25,7 @@ func ParseEmpQuery(c *fiber.Ctx) utils.EmpListQuery {
 		DeptID:       deptID,
 		HasCID:       c.Query("has_cid", ""),
 		StatusFilter: c.Query("status", ""),
+		DateFrom:     c.Query("date_from", ""),
+		DateTo:       c.Query("date_to", ""),
 	}
 }

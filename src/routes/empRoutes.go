@@ -13,6 +13,7 @@ func SetupEmpRoutes(app fiber.Router, db *sql.DB) {
 	prefix := app.Group("/emp", middleware.AuthGuards(db, []string{"admin"}))
 
 	prefix.Get("/list", emp.GetEmpList(db))
+	prefix.Get("/attendance", emp.GetAttendanceList(db))
 	prefix.Get("/departments", emp.GetDepartments(db))
 	prefix.Patch("/cid", emp.UpdateCID(db))
 
