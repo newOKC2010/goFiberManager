@@ -27,7 +27,7 @@ export default function SidebarMenu({ menus, currentPath, onMenuClick }: Sidebar
     children?.some(child => child.path === currentPath);
 
   return (
-    <nav className="flex-1 p-4 space-y-2">
+    <nav className="flex-1 overflow-y-auto p-4 space-y-2">
       {menus.map((menu) => (
         <div key={menu.path || menu.name}>
           <button

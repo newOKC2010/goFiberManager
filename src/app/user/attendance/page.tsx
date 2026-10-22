@@ -75,22 +75,22 @@ export default function UserAttendancePage() {
     <div className="p-6 space-y-4 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-800">รายการ Scan ของฉัน</h1>
 
-      <div className="bg-white rounded-2xl border border-gray-200 p-4 space-y-4">
-        <div className="flex flex-wrap gap-3 items-end">
-          <HeaderFiltersDateRange
-            startDate={dateFrom} endDate={dateTo}
-            onStartDateChange={setDateFrom} onEndDateChange={setDateTo}
-          />
+      <div className="bg-white rounded-2xl border border-gray-200 p-4 space-y-3">
+        <HeaderFiltersDateRange
+          startDate={dateFrom} endDate={dateTo}
+          onStartDateChange={setDateFrom} onEndDateChange={setDateTo}
+        />
+        <div className="w-full sm:w-auto">
           <Dropdown label="แสดงต่อหน้า" icon="format_list_numbered" options={LIMIT_OPTIONS} value={limit} onChange={handleLimitChange} />
         </div>
 
         <div className="flex gap-2">
           <button onClick={handleSearch}
-            className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors cursor-pointer">
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors cursor-pointer">
             <span className="material-symbols-outlined text-lg">search</span>ค้นหา
           </button>
           <button onClick={handleReset}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors cursor-pointer">
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors cursor-pointer">
             <span className="material-symbols-outlined text-lg">restart_alt</span>ล้างค่า
           </button>
         </div>
