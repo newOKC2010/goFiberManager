@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Swal from 'sweetalert2';
 import HeaderFiltersDateRange from '@/components/dataPicker/headerFiltersDateRange';
 import { fetchMyAttendance, AttendanceRow } from './service/serviceUserAttendance';
+import { buildScanFlags } from '@/utils/timeCheck';
 
 const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const THAI_MONTHS_SHORT = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
@@ -35,6 +36,7 @@ function groupByMonth(data: AttendanceRow[]) {
 
 export default function UserAttendancePage() {
   const [data, setData] = useState<AttendanceRow[]>([]);
+  const [checkTime, setCheckTime] = useState(false);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [dateFrom, setDateFrom] = useState('');
@@ -67,6 +69,7 @@ export default function UserAttendancePage() {
     try {
       const res = await fetchMyAttendance({ date_from: dateFrom, date_to: dateTo });
       setData(res.data ?? []);
+      setCheckTime(res.check_time ?? false);
     } catch { setData([]); }
     finally { setLoading(false); }
   };
@@ -126,9 +129,15 @@ export default function UserAttendancePage() {
                 <tr key={row.work_date} className="border-b border-gray-50 hover:bg-gray-50">
                   <td className="px-4 py-2 font-bold text-gray-700">{formatThaiDate(row.work_date)}</td>
                   <td className="px-4 py-2 font-bold">
-                    {row.scan_times.length > 0
-                      ? <span className="text-indigo-600">{row.scan_times.join(' , ')}</span>
-                      : <span className="text-red-400">-</span>}
+                    {row.scan_times.length === 0
+                      ? <span className="text-red-400">-</span>
+                      : <span className="text-indigo-600 flex flex-wrap gap-1">
+                          {buildScanFlags(row.scan_times, checkTime).map((f, i, arr) => (
+                            <span key={i} className={`${f.late ? 'underline' : ''} ${f.earlyLeave ? 'underline decoration-double' : ''}`}>
+                              {f.noExit ? `${f.time} ?` : f.time}{i < arr.length - 1 ? ' ,' : ''}
+                            </span>
+                          ))}
+                        </span>}
                   </td>
                 </tr>
               ))}

@@ -11,7 +11,9 @@ export interface DateRecord {
 export interface ReportRow {
   hr_emp_id: string;
   full_name: string;
+  dept_id: number;
   dept_name: string;
+  check_time: boolean;
   dates: DateRecord[];
 }
 

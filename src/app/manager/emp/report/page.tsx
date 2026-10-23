@@ -8,6 +8,7 @@ import AutocompleteInput from '@/components/input/autocomplete/AutocompleteInput
 import { Modal } from '@/components/modal/mainModal';
 import HeaderFiltersDateRange from '@/components/dataPicker/headerFiltersDateRange';
 import { fetchReport, ReportRow, ReportParams, Department } from './service/serviceReport';
+import { buildScanFlags } from '@/utils/timeCheck';
 import { printAttendanceReport } from './utils/printReport';
 import { fetchDepartments } from '../service/serviceEmp';
 
@@ -192,16 +193,27 @@ export default function ReportPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {viewRecord.dates.map(dr => (
-                    <tr key={dr.date} className="border-b border-gray-50">
-                      <td className="px-4 py-2 font-bold text-gray-700">{dr.date}</td>
-                      <td className="px-4 py-2 font-bold">
-                        {dr.scan_times.length > 0
-                          ? <span className="text-indigo-600">{dr.scan_times.join(' , ')}</span>
-                          : <span className="text-red-400 font-bold">-</span>}
-                      </td>
-                    </tr>
-                  ))}
+                  {viewRecord.dates.map(dr => {
+                    const checkTime = viewRecord.check_time;
+                    const flags = buildScanFlags(dr.scan_times, checkTime);
+                    return (
+                      <tr key={dr.date} className="border-b border-gray-50">
+                        <td className="px-4 py-2 font-bold text-gray-700">{dr.date}</td>
+                        <td className="px-4 py-2 font-bold">
+                          {flags.length === 0
+                            ? <span className="text-red-400">-</span>
+                            : <span className="text-indigo-600 flex flex-wrap gap-1">
+                                {flags.map((f, i) => (
+                                  <span key={i}
+                                    className={`${f.late ? 'underline' : ''} ${f.earlyLeave ? 'underline decoration-double' : ''}`}>
+                                    {f.noExit ? `${f.time} ?` : f.time}{i < flags.length - 1 ? ' ,' : ''}
+                                  </span>
+                                ))}
+                              </span>}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

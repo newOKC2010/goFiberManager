@@ -1,4 +1,5 @@
 import { ReportRow } from '../service/serviceReport';
+import { buildScanFlags, renderScanFlagsHtml } from '@/utils/timeCheck';
 
 const THAI_MONTHS_SHORT = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 
@@ -19,8 +20,11 @@ export function printAttendanceReport(data: ReportRow[], dateFrom: string, dateT
     </div>`;
 
   const sections = data.map((emp, idx) => {
+    const checkTime = emp.check_time;
     const dateRows = emp.dates.map(dr => {
-      const scans = dr.scan_times.length > 0 ? dr.scan_times.join(' , ') : '-';
+      const scans = dr.scan_times.length > 0
+        ? renderScanFlagsHtml(buildScanFlags(dr.scan_times, checkTime))
+        : '-';
       return `<tr>
         <td style="padding:6px 10px;border:1px solid #ddd;">${formatThaiDate(dr.date)}</td>
         <td style="padding:6px 10px;border:1px solid #ddd;word-break:break-word;">${scans}</td>
