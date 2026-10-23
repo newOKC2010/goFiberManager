@@ -15,12 +15,8 @@ func GetMyAttendance(db *sql.DB) fiber.Handler {
 		me := c.Locals("users").(*middleware.UserQANCInfo)
 		q := handlerUser.ParseUserQuery(c, me)
 
-		// default = วันล่าสุดของตัวเอง
-		if q.DateFrom == "" && q.DateTo == "" {
-			if latest, err := serviceUser.GetMyLatestAttendanceDate(db, me.CID); err == nil {
-				q.DateFrom = latest
-				q.DateTo = latest
-			}
+		if q.DateFrom == "" || q.DateTo == "" {
+			return c.Status(400).JSON(fiber.Map{"message": "กรุณาระบุช่วงวันที่ (date_from และ date_to)"})
 		}
 
 		resp, err := serviceUser.GetMyAttendance(db, q)

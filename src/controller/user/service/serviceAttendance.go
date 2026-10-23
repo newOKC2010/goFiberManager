@@ -3,72 +3,66 @@ package serviceUser
 import (
 	"database/sql"
 	"encoding/json"
-	"strconv"
+	"time"
 
 	userUtils "manager/src/controller/user/utils"
 )
 
 func GetMyAttendance(db *sql.DB, q userUtils.AttendanceQuery) (userUtils.AttendanceResponse, error) {
-	args := []interface{}{q.CID}
-	where := `eu.cid = $1`
-	idx := 2
-
-	if q.DateFrom != "" {
-		where += ` AND al.work_date >= $` + strconv.Itoa(idx)
-		args = append(args, q.DateFrom)
-		idx++
-	}
-	if q.DateTo != "" {
-		where += ` AND al.work_date <= $` + strconv.Itoa(idx)
-		args = append(args, q.DateTo)
-		idx++
+	// หา emp_id จาก CID
+	var empID int64
+	if err := db.QueryRow(`SELECT id FROM emp_users WHERE cid = $1`, q.CID).Scan(&empID); err != nil {
+		return userUtils.AttendanceResponse{Data: []userUtils.AttendanceRow{}}, nil
 	}
 
-	base := `FROM attendance_logs al
-			 JOIN emp_users eu ON eu.id = al.emp_id
-			 WHERE ` + where
-
-	var total int
-	if err := db.QueryRow(`SELECT COUNT(*) `+base, args...).Scan(&total); err != nil {
-		return userUtils.AttendanceResponse{}, err
-	}
-
-	offset := (q.Page - 1) * q.Limit
-	dataArgs := append(args, q.Limit, offset)
+	// query attendance ในช่วงวันที่
 	rows, err := db.Query(
-		`SELECT TO_CHAR(al.work_date,'YYYY-MM-DD'), al.scan_times `+base+
-			` ORDER BY al.work_date DESC
-			 LIMIT $`+strconv.Itoa(idx)+` OFFSET $`+strconv.Itoa(idx+1),
-		dataArgs...,
+		`SELECT TO_CHAR(work_date,'YYYY-MM-DD'), scan_times
+		 FROM attendance_logs
+		 WHERE emp_id = $1 AND work_date BETWEEN $2 AND $3`,
+		empID, q.DateFrom, q.DateTo,
 	)
 	if err != nil {
 		return userUtils.AttendanceResponse{}, err
 	}
 	defer rows.Close()
 
-	data := []userUtils.AttendanceRow{}
+	// map[date] → scan_times
+	attMap := map[string][]string{}
 	for rows.Next() {
-		var r userUtils.AttendanceRow
+		var d string
 		var scanJSON []byte
-		if err := rows.Scan(&r.WorkDate, &scanJSON); err != nil {
+		if err := rows.Scan(&d, &scanJSON); err != nil {
 			continue
 		}
-		json.Unmarshal(scanJSON, &r.ScanTimes) //nolint
-		if r.ScanTimes == nil {
-			r.ScanTimes = []string{}
+		var times []string
+		json.Unmarshal(scanJSON, &times) //nolint
+		attMap[d] = times
+	}
+
+	// generate date range
+	dateRange := generateDateRange(q.DateFrom, q.DateTo)
+	result := make([]userUtils.AttendanceRow, len(dateRange))
+	for i, d := range dateRange {
+		scans := attMap[d]
+		if scans == nil {
+			scans = []string{}
 		}
-		data = append(data, r)
+		result[i] = userUtils.AttendanceRow{WorkDate: d, ScanTimes: scans}
 	}
 
-	totalPages := 1
-	if q.Limit > 0 {
-		totalPages = (total + q.Limit - 1) / q.Limit
-	}
+	return userUtils.AttendanceResponse{Data: result}, nil
+}
 
-	return userUtils.AttendanceResponse{
-		TotalCount:  total,
-		TotalPages:  totalPages,
-		CurrentPage: q.Page,
-		Data:        data,
-	}, nil
+func generateDateRange(from, to string) []string {
+	start, err1 := time.Parse("2006-01-02", from)
+	end, err2 := time.Parse("2006-01-02", to)
+	if err1 != nil || err2 != nil {
+		return []string{}
+	}
+	var dates []string
+	for d := start; !d.After(end); d = d.AddDate(0, 0, 1) {
+		dates = append(dates, d.Format("2006-01-02"))
+	}
+	return dates
 }
