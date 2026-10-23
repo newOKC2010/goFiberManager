@@ -94,3 +94,22 @@ func LoadAlertTargets() AlertTargets {
 		Email: os.Getenv("EMAIL_ALERT"),
 	}
 }
+
+var timeCheckDepts map[int64]bool
+
+func loadDepCheck() {
+	timeCheckDepts = map[int64]bool{}
+	for _, s := range strings.Split(os.Getenv("DEP_CHECK"), ",") {
+		s = strings.TrimSpace(s)
+		if id, err := strconv.ParseInt(s, 10, 64); err == nil {
+			timeCheckDepts[id] = true
+		}
+	}
+}
+
+func IsTimeCheckDept(deptID int64) bool {
+	if timeCheckDepts == nil {
+		loadDepCheck()
+	}
+	return timeCheckDepts[deptID]
+}

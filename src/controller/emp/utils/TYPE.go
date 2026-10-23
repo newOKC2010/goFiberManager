@@ -76,10 +76,12 @@ type DateRecord struct {
 }
 
 type ReportRow struct {
-	HrEmpID  string       `json:"hr_emp_id"`
-	FullName string       `json:"full_name"`
-	DeptName string       `json:"dept_name"`
-	Dates    []DateRecord `json:"dates"`
+	HrEmpID   string       `json:"hr_emp_id"`
+	FullName  string       `json:"full_name"`
+	DeptID    int64        `json:"dept_id"`
+	DeptName  string       `json:"dept_name"`
+	CheckTime bool         `json:"check_time"`
+	Dates     []DateRecord `json:"dates"`
 }
 
 type ReportQuery struct {

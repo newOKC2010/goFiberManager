@@ -6,14 +6,16 @@ import (
 	"time"
 
 	userUtils "manager/src/controller/user/utils"
+	loadEnv "manager/src/loadenv"
 )
 
 func GetMyAttendance(db *sql.DB, q userUtils.AttendanceQuery) (userUtils.AttendanceResponse, error) {
-	// หา emp_id จาก CID
-	var empID int64
-	if err := db.QueryRow(`SELECT id FROM emp_users WHERE cid = $1`, q.CID).Scan(&empID); err != nil {
+	// หา emp_id + dept_id จาก CID
+	var empID, deptID int64
+	if err := db.QueryRow(`SELECT id, COALESCE(department_id,0) FROM emp_users WHERE cid = $1`, q.CID).Scan(&empID, &deptID); err != nil {
 		return userUtils.AttendanceResponse{Data: []userUtils.AttendanceRow{}}, nil
 	}
+	checkTime := loadEnv.IsTimeCheckDept(deptID)
 
 	// query attendance ในช่วงวันที่
 	rows, err := db.Query(
@@ -51,7 +53,7 @@ func GetMyAttendance(db *sql.DB, q userUtils.AttendanceQuery) (userUtils.Attenda
 		result[i] = userUtils.AttendanceRow{WorkDate: d, ScanTimes: scans}
 	}
 
-	return userUtils.AttendanceResponse{Data: result}, nil
+	return userUtils.AttendanceResponse{CheckTime: checkTime, Data: result}, nil
 }
 
 func generateDateRange(from, to string) []string {

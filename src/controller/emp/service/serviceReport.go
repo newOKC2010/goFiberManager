@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"manager/src/controller/emp/utils"
+	loadEnv "manager/src/loadenv"
 )
 
 func GetReport(db *sql.DB, q utils.ReportQuery) (utils.ReportResponse, error) {
@@ -41,7 +42,7 @@ func GetReport(db *sql.DB, q utils.ReportQuery) (utils.ReportResponse, error) {
 
 	// --- 3. query employees (paginated) ---
 	offset := (q.Page - 1) * q.Limit
-	empSQL := `SELECT eu.hr_emp_id, eu.full_name, COALESCE(d.name,'-') as dept_name
+	empSQL := `SELECT eu.hr_emp_id, eu.full_name, COALESCE(eu.department_id,0), COALESCE(d.name,'-') as dept_name
 			   FROM emp_users eu
 			   LEFT JOIN departments d ON d.id = eu.department_id
 			   WHERE ` + where + `
@@ -62,9 +63,10 @@ func GetReport(db *sql.DB, q utils.ReportQuery) (utils.ReportResponse, error) {
 	hrIDs := []string{}
 	for rows.Next() {
 		var r utils.ReportRow
-		if err := rows.Scan(&r.HrEmpID, &r.FullName, &r.DeptName); err != nil {
+		if err := rows.Scan(&r.HrEmpID, &r.FullName, &r.DeptID, &r.DeptName); err != nil {
 			continue
 		}
+		r.CheckTime = loadEnv.IsTimeCheckDept(r.DeptID)
 		empList = append(empList, r)
 		hrIDs = append(hrIDs, r.HrEmpID)
 	}

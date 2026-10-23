@@ -12,5 +12,6 @@ type AttendanceQuery struct {
 }
 
 type AttendanceResponse struct {
-	Data []AttendanceRow `json:"data"`
+	CheckTime bool            `json:"check_time"` // true ถ้า dept อยู่ใน time-check list
+	Data      []AttendanceRow `json:"data"`
 }
