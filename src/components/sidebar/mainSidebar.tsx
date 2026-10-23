@@ -27,6 +27,7 @@ const ADMIN_MENUS = [
     icon: 'badge',
     children: [
       { name: 'รายชื่อพนักงาน', path: '/manager/emp', icon: 'group' },
+      { name: 'ตรวจสอบการเข้างาน', path: '/manager/emp/report', icon: 'fact_check' },
       { name: 'จัดการสถานะ', path: '/manager/emp/manage', icon: 'manage_accounts' },
     ]
   },
