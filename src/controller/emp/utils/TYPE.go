@@ -69,3 +69,29 @@ type AttendanceListResponse struct {
 	Pagination
 	Data []AttendanceRecord `json:"data"`
 }
+
+type DateRecord struct {
+	Date      string   `json:"date"`
+	ScanTimes []string `json:"scan_times"`
+}
+
+type ReportRow struct {
+	HrEmpID  string       `json:"hr_emp_id"`
+	FullName string       `json:"full_name"`
+	DeptName string       `json:"dept_name"`
+	Dates    []DateRecord `json:"dates"`
+}
+
+type ReportQuery struct {
+	DateFrom string
+	DateTo   string
+	Name     string
+	DeptID   int64
+	Page     int
+	Limit    int
+}
+
+type ReportResponse struct {
+	Pagination
+	Data []ReportRow `json:"data"`
+}

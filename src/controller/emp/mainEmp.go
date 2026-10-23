@@ -14,14 +14,6 @@ import (
 func GetEmpList(db *sql.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		q := handler.ParseEmpQuery(c)
-		// default date เฉพาะตอนไม่มี filter ใดเลย (โหลดครั้งแรก)
-		noFilter := q.DateFrom == "" && q.DateTo == "" && q.Name == "" && q.DeptID == 0 && q.HasCID == ""
-		if noFilter {
-			if latest, err := service.GetLatestAttendanceDate(db); err == nil && latest != "" {
-				q.DateFrom = latest
-				q.DateTo = latest
-			}
-		}
 		resp, err := service.GetEmpList(db, q)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"message": "ดึงข้อมูลพนักงานไม่สำเร็จ"})
@@ -100,6 +92,37 @@ func GetAttendanceList(db *sql.DB) fiber.Handler {
 		resp, err := service.GetAttendanceList(db, q)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"message": "ดึงข้อมูลไม่สำเร็จ"})
+		}
+		return c.JSON(resp)
+	}
+}
+
+func GetReport(db *sql.DB) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		dateFrom := c.Query("date_from", "")
+		dateTo := c.Query("date_to", "")
+		if dateFrom == "" || dateTo == "" {
+			return c.Status(400).JSON(fiber.Map{"message": "กรุณาระบุช่วงวันที่ (date_from และ date_to)"})
+		}
+
+		page, _ := strconv.Atoi(c.Query("page", "1"))
+		limit, _ := strconv.Atoi(c.Query("limit", "10"))
+		deptID, _ := strconv.ParseInt(c.Query("dept_id", "0"), 10, 64)
+		if page < 1 {
+			page = 1
+		}
+
+		q := utils.ReportQuery{
+			DateFrom: dateFrom,
+			DateTo:   dateTo,
+			Name:     c.Query("name", ""),
+			DeptID:   deptID,
+			Page:     page,
+			Limit:    limit,
+		}
+		resp, err := service.GetReport(db, q)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"message": "ดึงข้อมูลรายงานไม่สำเร็จ"})
 		}
 		return c.JSON(resp)
 	}

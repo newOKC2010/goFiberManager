@@ -14,6 +14,7 @@ func SetupEmpRoutes(app fiber.Router, db *sql.DB) {
 
 	prefix.Get("/list", emp.GetEmpList(db))
 	prefix.Get("/attendance", emp.GetAttendanceList(db))
+	prefix.Get("/report", emp.GetReport(db))
 	prefix.Get("/departments", emp.GetDepartments(db))
 	prefix.Patch("/cid", emp.UpdateCID(db))
 
