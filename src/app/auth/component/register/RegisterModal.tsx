@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Modal } from '@/components/modal/mainModal';
 import { Button } from '@/components/buttonClick/mainButton';
 import { InputText } from '@/components/input/text/mainInputText';
-import CidInput from '@/components/input/cid/mainInputCID';
+
 import { RegisterModalProps, RegisterErrors } from '@/app/auth/component/register/utils/types';
 import { onNameChange, onEmailChange, handleRegisterSubmit } from '@/app/auth/component/register/handler/handlerRegister';
 
@@ -50,7 +50,20 @@ export const RegisterModal = ({ isOpen, onClose }: RegisterModalProps) => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1">
           <label className="text-xs font-bold text-gray-700 ml-1">เลขบัตรประชาชน</label>
-          <CidInput value={cid} onChange={(val) => { setCid(val); setErrors(e => ({ ...e, cid: '' })); }} size="md" disabled={loading} />
+          <InputText
+            type="text"
+            inputMode="numeric"
+            value={cid}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, '').slice(0, 13);
+              setCid(val);
+              setErrors(err => ({ ...err, cid: '' }));
+            }}
+            placeholder="เลขบัตรประชาชน 13 หลัก"
+            disabled={loading}
+            icon="badge"
+            maxLength={13}
+          />
           {errors.cid && <p className="text-xs text-red-500 font-bold ml-1">{errors.cid}</p>}
         </div>
 

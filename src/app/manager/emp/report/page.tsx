@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import Table from '@/components/table/mainTable';
 import Pagination from '@/components/pagination/mainPagination';
 import Dropdown from '@/components/dropdown/mainDropdown';
-import { InputText } from '@/components/input/text/mainInputText';
+import AutocompleteInput from '@/components/input/autocomplete/AutocompleteInput';
 import { Modal } from '@/components/modal/mainModal';
 import HeaderFiltersDateRange from '@/components/dataPicker/headerFiltersDateRange';
 import { fetchReport, ReportRow, ReportParams, Department } from './service/serviceReport';
@@ -124,7 +124,7 @@ export default function ReportPage() {
 
       <div className="bg-white rounded-2xl border border-gray-200 p-4 space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          <InputText label="ค้นหาชื่อ" value={nameInput} onChange={(e) => setNameInput(e.target.value)} placeholder="ชื่อ หรือ นามสกุล" icon="search" />
+          <AutocompleteInput label="ค้นหาชื่อ" value={nameInput} onChange={setNameInput} placeholder="ชื่อ หรือ นามสกุล" icon="search" />
           <Dropdown label="แผนก" icon="business" options={deptOptions} value={deptID} onChange={setDeptID} searchable />
           <Dropdown label="แสดงต่อหน้า" icon="format_list_numbered" options={LIMIT_OPTIONS} value={limit} onChange={handleLimitChange} />
         </div>
