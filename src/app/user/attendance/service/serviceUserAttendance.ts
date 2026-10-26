@@ -13,6 +13,8 @@ export interface AttendanceParams {
 
 export interface AttendanceResponse {
   check_time: boolean;
+  full_name: string;
+  dept_name: string;
   data: AttendanceRow[];
 }
 

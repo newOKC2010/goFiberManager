@@ -2,8 +2,9 @@
 import { useState } from 'react';
 import Swal from 'sweetalert2';
 import HeaderFiltersDateRange from '@/components/dataPicker/headerFiltersDateRange';
-import { fetchMyAttendance, AttendanceRow } from './service/serviceUserAttendance';
+import { fetchMyAttendance, AttendanceRow, AttendanceResponse } from './service/serviceUserAttendance';
 import { buildScanFlags } from '@/utils/timeCheck';
+import { printUserAttendance } from './utils/printUserAttendance';
 
 const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const THAI_MONTHS_SHORT = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
@@ -12,18 +13,14 @@ function formatThaiDate(iso: string) {
   const [y, m, d] = iso.split('-').map(Number);
   return `${d} ${THAI_MONTHS_SHORT[m - 1]} ${y + 543}`;
 }
-
 function monthKey(iso: string) {
   const [y, m] = iso.split('-').map(Number);
   return `${y}-${String(m).padStart(2, '0')}`;
 }
-
 function monthLabel(key: string) {
   const [y, m] = key.split('-').map(Number);
   return `${THAI_MONTHS[m - 1]} ${y + 543}`;
 }
-
-// group rows ตามเดือน
 function groupByMonth(data: AttendanceRow[]) {
   const map = new Map<string, AttendanceRow[]>();
   data.forEach(r => {
@@ -35,8 +32,7 @@ function groupByMonth(data: AttendanceRow[]) {
 }
 
 export default function UserAttendancePage() {
-  const [data, setData] = useState<AttendanceRow[]>([]);
-  const [checkTime, setCheckTime] = useState(false);
+  const [result, setResult] = useState<AttendanceResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [dateFrom, setDateFrom] = useState('');
@@ -68,18 +64,26 @@ export default function UserAttendancePage() {
     setHasSearched(true);
     try {
       const res = await fetchMyAttendance({ date_from: dateFrom, date_to: dateTo });
-      setData(res.data ?? []);
-      setCheckTime(res.check_time ?? false);
-    } catch { setData([]); }
+      setResult(res);
+    } catch { setResult(null); }
     finally { setLoading(false); }
+  };
+
+  const handlePrint = () => {
+    if (!validateDates()) return;
+    if (!result) {
+      Swal.fire({ icon: 'warning', title: '<b>ไม่มีข้อมูล</b>', html: '<b>กรุณาค้นหาข้อมูลก่อนพิมพ์</b>' });
+      return;
+    }
+    printUserAttendance(result, dateFrom, dateTo);
   };
 
   const handleReset = () => {
     setDateFrom(''); setDateTo('');
-    setHasSearched(false); setData([]);
+    setHasSearched(false); setResult(null);
   };
 
-  const grouped = groupByMonth(data);
+  const grouped = groupByMonth(result?.data ?? []);
 
   return (
     <div className="p-6 space-y-4 max-w-2xl mx-auto">
@@ -87,7 +91,7 @@ export default function UserAttendancePage() {
 
       <div className="bg-white rounded-2xl border border-gray-200 p-4 space-y-3">
         <HeaderFiltersDateRange startDate={dateFrom} endDate={dateTo} onStartDateChange={setDateFrom} onEndDateChange={setDateTo} />
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <button onClick={handleSearch}
             className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors cursor-pointer">
             <span className="material-symbols-outlined text-lg">search</span>ค้นหา
@@ -96,6 +100,12 @@ export default function UserAttendancePage() {
             className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors cursor-pointer">
             <span className="material-symbols-outlined text-lg">restart_alt</span>ล้างค่า
           </button>
+          {hasSearched && result && (
+            <button onClick={handlePrint}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 transition-colors cursor-pointer">
+              <span className="material-symbols-outlined text-lg">print</span>พิมพ์
+            </button>
+          )}
         </div>
       </div>
 
@@ -132,7 +142,7 @@ export default function UserAttendancePage() {
                     {row.scan_times.length === 0
                       ? <span className="text-red-400">-</span>
                       : <span className="text-indigo-600 flex flex-wrap gap-1">
-                          {buildScanFlags(row.scan_times, checkTime).map((f, i, arr) => (
+                          {buildScanFlags(row.scan_times, result?.check_time ?? false).map((f, i, arr) => (
                             <span key={i} className={`${f.late ? 'underline' : ''} ${f.earlyLeave ? 'underline decoration-double' : ''}`}>
                               {f.noExit ? `${f.time} ?` : f.time}{i < arr.length - 1 ? ' ,' : ''}
                             </span>
