@@ -10,14 +10,18 @@ import (
 )
 
 func GetMyAttendance(db *sql.DB, q userUtils.AttendanceQuery) (userUtils.AttendanceResponse, error) {
-	// หา emp_id + dept_id จาก CID
 	var empID, deptID int64
-	if err := db.QueryRow(`SELECT id, COALESCE(department_id,0) FROM emp_users WHERE cid = $1`, q.CID).Scan(&empID, &deptID); err != nil {
+	var fullName, deptName string
+	err := db.QueryRow(`
+		SELECT eu.id, COALESCE(eu.department_id,0), eu.full_name, COALESCE(d.name,'-')
+		FROM emp_users eu
+		LEFT JOIN departments d ON d.id = eu.department_id
+		WHERE eu.cid = $1`, q.CID).Scan(&empID, &deptID, &fullName, &deptName)
+	if err != nil {
 		return userUtils.AttendanceResponse{Data: []userUtils.AttendanceRow{}}, nil
 	}
 	checkTime := loadEnv.IsTimeCheckDept(deptID)
 
-	// query attendance ในช่วงวันที่
 	rows, err := db.Query(
 		`SELECT TO_CHAR(work_date,'YYYY-MM-DD'), scan_times
 		 FROM attendance_logs
@@ -29,7 +33,6 @@ func GetMyAttendance(db *sql.DB, q userUtils.AttendanceQuery) (userUtils.Attenda
 	}
 	defer rows.Close()
 
-	// map[date] → scan_times
 	attMap := map[string][]string{}
 	for rows.Next() {
 		var d string
@@ -42,7 +45,6 @@ func GetMyAttendance(db *sql.DB, q userUtils.AttendanceQuery) (userUtils.Attenda
 		attMap[d] = times
 	}
 
-	// generate date range
 	dateRange := generateDateRange(q.DateFrom, q.DateTo)
 	result := make([]userUtils.AttendanceRow, len(dateRange))
 	for i, d := range dateRange {
@@ -53,7 +55,12 @@ func GetMyAttendance(db *sql.DB, q userUtils.AttendanceQuery) (userUtils.Attenda
 		result[i] = userUtils.AttendanceRow{WorkDate: d, ScanTimes: scans}
 	}
 
-	return userUtils.AttendanceResponse{CheckTime: checkTime, Data: result}, nil
+	return userUtils.AttendanceResponse{
+		CheckTime: checkTime,
+		FullName:  fullName,
+		DeptName:  deptName,
+		Data:      result,
+	}, nil
 }
 
 func generateDateRange(from, to string) []string {
