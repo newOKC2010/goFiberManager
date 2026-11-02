@@ -11,7 +11,6 @@ import (
 	utils "manager/src/controller/uploadExcel/utils"
 )
 
-// ParseExcel - อ่านไฟล์ Excel และ return slice ของ ExcelRow
 func ParseExcel(fileBytes []byte) ([]utils.ExcelRow, error) {
 	f, err := excelize.OpenReader(bytes.NewReader(fileBytes))
 	if err != nil {
@@ -62,13 +61,20 @@ func ParseExcel(fileBytes []byte) ([]utils.ExcelRow, error) {
 	return result, nil
 }
 
-// parseDate - แปลงวันที่จาก string หลายรูปแบบ
+// parseDate รองรับทั้ง 2 หลักและ 4 หลักปี หลายรูปแบบ
 func parseDate(s string) (time.Time, error) {
 	formats := []string{
-		"02-01-2006",
-		"2006-01-02",
-		"01/02/2006",
-		"02/01/2006",
+		"02-01-2006", // DD-MM-YYYY
+		"02-01-06",   // DD-MM-YY
+		"2006-01-02", // YYYY-MM-DD
+		"01/02/2006", // MM/DD/YYYY
+		"01/02/06",   // MM/DD/YY
+		"02/01/2006", // DD/MM/YYYY
+		"02/01/06",   // DD/MM/YY
+		"1/2/2006",   // M/D/YYYY
+		"1/2/06",     // M/D/YY
+		"2/1/2006",   // D/M/YYYY
+		"2/1/06",     // D/M/YY
 	}
 	for _, f := range formats {
 		if t, err := time.Parse(f, s); err == nil {
