@@ -3,6 +3,7 @@ package handlerUploadExcel
 import (
 	"bytes"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -61,20 +62,26 @@ func ParseExcel(fileBytes []byte) ([]utils.ExcelRow, error) {
 	return result, nil
 }
 
-// parseDate รองรับทั้ง 2 หลักและ 4 หลักปี หลายรูปแบบ
+// parseDate รองรับ string หลายรูปแบบ และ Excel serial number
 func parseDate(s string) (time.Time, error) {
+	// กรณี Excel serial number (date cell ที่ excelize ส่งมาเป็นตัวเลข)
+	if serial, err := strconv.ParseFloat(s, 64); err == nil && serial > 1000 {
+		t, err := excelize.ExcelDateToTime(serial, false)
+		if err == nil {
+			return t, nil
+		}
+	}
+
 	formats := []string{
 		"02-01-2006", // DD-MM-YYYY
 		"02-01-06",   // DD-MM-YY
 		"2006-01-02", // YYYY-MM-DD
-		"01/02/2006", // MM/DD/YYYY
-		"01/02/06",   // MM/DD/YY
+		"1/2/2006",   // M/D/YYYY (ลองก่อน เพราะ Excel US format)
+		"1/2/06",     // M/D/YY
 		"02/01/2006", // DD/MM/YYYY
 		"02/01/06",   // DD/MM/YY
-		"1/2/2006",   // M/D/YYYY
-		"1/2/06",     // M/D/YY
-		"2/1/2006",   // D/M/YYYY
-		"2/1/06",     // D/M/YY
+		"01/02/2006", // MM/DD/YYYY
+		"01/02/06",   // MM/DD/YY
 	}
 	for _, f := range formats {
 		if t, err := time.Parse(f, s); err == nil {
