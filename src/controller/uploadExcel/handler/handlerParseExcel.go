@@ -76,9 +76,7 @@ func parseDate(s string) (time.Time, error) {
 		"02-01-2006", // DD-MM-YYYY
 		"02-01-06",   // DD-MM-YY
 		"2006-01-02", // YYYY-MM-DD
-		"1/2/2006",   // M/D/YYYY (ลองก่อน เพราะ Excel US format)
-		"1/2/06",     // M/D/YY
-		"02/01/2006", // DD/MM/YYYY
+		"02/01/2006", // DD/MM/YYYY (ไทย — ลองก่อน)
 		"02/01/06",   // DD/MM/YY
 		"01/02/2006", // MM/DD/YYYY
 		"01/02/06",   // MM/DD/YY

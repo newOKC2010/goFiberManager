@@ -1,7 +1,7 @@
 package handlerUploadExcel
 
 import (
-	"fmt"
+	"encoding/json"
 
 	utils "manager/src/controller/uploadExcel/utils"
 )
@@ -51,15 +51,6 @@ func appendUnique(slice []string, val string) []string {
 
 // ScanTimesToJSON - แปลง []string เป็น JSON string สำหรับ JSONB
 func ScanTimesToJSON(times []string) string {
-	if len(times) == 0 {
-		return "[]"
-	}
-	result := "["
-	for i, t := range times {
-		result += fmt.Sprintf("%q", t)
-		if i < len(times)-1 {
-			result += ","
-		}
-	}
-	return result + "]"
+	b, _ := json.Marshal(times)
+	return string(b)
 }

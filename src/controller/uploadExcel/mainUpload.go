@@ -2,6 +2,7 @@ package uploadExcel
 
 import (
 	"database/sql"
+	"io"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -33,8 +34,8 @@ func UploadExcel(db *sql.DB) fiber.Handler {
 		}
 		defer f.Close()
 
-		fileBytes := make([]byte, file.Size)
-		if _, err := f.Read(fileBytes); err != nil {
+		fileBytes, err := io.ReadAll(f)
+		if err != nil {
 			return c.Status(500).JSON(fiber.Map{
 				"success": false,
 				"message": "อ่านไฟล์ไม่สำเร็จ",
@@ -53,27 +54,12 @@ func UploadExcel(db *sql.DB) fiber.Handler {
 		result := utils.UploadResult{TotalRows: len(rows)}
 
 		for _, rec := range records {
-			deptID, err := service.UpsertDepartment(db, rec.Department)
-			if err != nil {
-				log.Printf("UpsertDepartment error [%s]: %v", rec.Department, err)
-				result.Errors++
-				continue
-			}
-
-			empID, err := service.UpsertEmployee(db, rec.HrEmpID, rec.FullName, deptID)
-			if err != nil {
-				log.Printf("UpsertEmployee error [%s]: %v", rec.HrEmpID, err)
-				result.Errors++
-				continue
-			}
-
 			scanJSON := handler.ScanTimesToJSON(rec.ScanTimes)
-			if err := service.UpsertAttendance(db, empID, rec.WorkDate, scanJSON); err != nil {
-				log.Printf("UpsertAttendance error [empID=%d date=%s]: %v", empID, rec.WorkDate.Format("2006-01-02"), err)
+			if err := service.UpsertRecord(db, rec, scanJSON); err != nil {
+				log.Printf("UpsertRecord error [%s %s]: %v", rec.HrEmpID, rec.WorkDate.Format("2006-01-02"), err)
 				result.Errors++
 				continue
 			}
-
 			result.Processed++
 		}
 
