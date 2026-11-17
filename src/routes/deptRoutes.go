@@ -15,6 +15,7 @@ func SetupDeptRoutes(app fiber.Router, db *sql.DB) {
 	prefix.Get("/list", dept.GetList(db))
 	prefix.Post("/", dept.Create(db))
 	prefix.Patch("/", dept.Update(db))
-	prefix.Get("/unassigned", dept.GetUnassigned(db))
+	prefix.Get("/employees", dept.GetEmpByDept(db))
+	prefix.Get("/unassigned-count", dept.GetUnassignedCount(db))
 	prefix.Patch("/assign", dept.AssignDept(db))
 }

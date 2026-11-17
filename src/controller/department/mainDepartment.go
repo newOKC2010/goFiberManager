@@ -10,15 +10,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetUnassigned(db *sql.DB) fiber.Handler {
+func GetEmpByDept(db *sql.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		page, _ := strconv.Atoi(c.Query("page", "1"))
 		limit, _ := strconv.Atoi(c.Query("limit", "10"))
 		hrEmpID := c.Query("hr_emp_id", "")
+		deptFilter := c.Query("dept_filter", "")
 		if page < 1 {
 			page = 1
 		}
-		resp, err := service.GetUnassigned(db, page, limit, hrEmpID)
+		resp, err := service.GetEmpByDept(db, page, limit, hrEmpID, deptFilter)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"message": "ดึงข้อมูลไม่สำเร็จ"})
 		}
@@ -32,10 +33,20 @@ func AssignDept(db *sql.DB) fiber.Handler {
 		if err := c.BodyParser(&body); err != nil {
 			return c.Status(400).JSON(fiber.Map{"message": "ข้อมูลไม่ถูกต้อง"})
 		}
-		if err := service.AssignDept(db, body.HrEmpID, body.DeptID); err != nil {
+		if err := service.AssignDept(db, body.HrEmpID, body.DeptID, body.FullName); err != nil {
 			return c.Status(400).JSON(fiber.Map{"message": err.Error()})
 		}
 		return c.JSON(fiber.Map{"message": "กำหนดแผนกสำเร็จ"})
+	}
+}
+
+func GetUnassignedCount(db *sql.DB) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var count int
+		if err := db.QueryRow(`SELECT COUNT(*) FROM emp_users WHERE department_id IS NULL`).Scan(&count); err != nil {
+			return c.Status(500).JSON(fiber.Map{"message": "ดึงข้อมูลไม่สำเร็จ"})
+		}
+		return c.JSON(fiber.Map{"count": count})
 	}
 }
 
