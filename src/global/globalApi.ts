@@ -22,4 +22,12 @@ export const API_ENDPOINTS = {
     MANAGE_LIST: '/emp/manage/list',
     MANAGE_TOGGLE: '/emp/manage/toggle',
   },
+  DEPT: {
+    LIST: '/dept/list',
+    CREATE: '/dept',
+    UPDATE: '/dept',
+    EMPLOYEES: '/dept/employees',
+    UNASSIGNED_COUNT: '/dept/unassigned-count',
+    ASSIGN: '/dept/assign',
+  },
 }

@@ -4,6 +4,7 @@ interface MenuItem {
   name: string;
   icon: string;
   path?: string;
+  badge?: number;
   children?: MenuItem[];
 }
 
@@ -17,13 +18,13 @@ export default function SidebarMenu({ menus, currentPath, onMenuClick }: Sidebar
   const [openMenus, setOpenMenus] = useState<string[]>([]);
 
   const toggleMenu = (name: string) => {
-    setOpenMenus(prev => 
+    setOpenMenus(prev =>
       prev.includes(name) ? prev.filter(m => m !== name) : [...prev, name]
     );
   };
 
   const isActive = (path?: string) => path === currentPath;
-  const isChildActive = (children?: MenuItem[]) => 
+  const isChildActive = (children?: MenuItem[]) =>
     children?.some(child => child.path === currentPath);
 
   return (
@@ -50,7 +51,7 @@ export default function SidebarMenu({ menus, currentPath, onMenuClick }: Sidebar
           </button>
 
           {menu.children && (
-            <div 
+            <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
                 openMenus.includes(menu.name) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
               }`}
@@ -69,7 +70,12 @@ export default function SidebarMenu({ menus, currentPath, onMenuClick }: Sidebar
                     <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'wght' 700" }}>
                       {child.icon}
                     </span>
-                    <span>{child.name}</span>
+                    <span className="flex-1 text-left">{child.name}</span>
+                    {!!child.badge && child.badge > 0 && (
+                      <span className="min-w-5 h-5 px-1 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                        {child.badge > 99 ? '99+' : child.badge}
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>

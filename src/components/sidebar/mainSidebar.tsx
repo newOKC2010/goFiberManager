@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { UserInfo, USER_ROLES } from '@/global/globalAuth';
+import { UserInfo } from '@/global/globalAuth';
 import { handleLogout, handleMenuClick } from '@/components/sidebar/handler/sidebarHandler';
 import MobileToggle from '@/components/sidebar/component/MobileToggle';
 import SidebarBackdrop from '@/components/sidebar/component/SidebarBackdrop';
@@ -10,18 +10,16 @@ import SidebarHeader from '@/components/sidebar/component/SidebarHeader';
 import SidebarMenu from '@/components/sidebar/component/SidebarMenu';
 import SidebarFooter from '@/components/sidebar/component/SidebarFooter';
 
-interface SidebarProps {
-  user: UserInfo | null;
-}
+const SHOW_UPLOAD_EXCEL = process.env.NEXT_PUBLIC_OPEN_MENU_UPLOAD_EXCEL !== 'false';
 
 const ADMIN_MENUS = [
-  {
+  ...(SHOW_UPLOAD_EXCEL ? [{
     name: 'ข้อมูลการเข้างาน',
     icon: 'schedule',
     children: [
       { name: 'อัพโหลด Excel', path: '/manager/upload', icon: 'upload_file' },
     ]
-  },
+  }] : []),
   {
     name: 'จัดการพนักงาน',
     icon: 'badge',
@@ -29,6 +27,8 @@ const ADMIN_MENUS = [
       { name: 'รายชื่อพนักงาน', path: '/manager/emp', icon: 'group' },
       { name: 'ตรวจสอบการเข้างาน', path: '/manager/emp/report', icon: 'fact_check' },
       { name: 'จัดการสถานะ', path: '/manager/emp/manage', icon: 'manage_accounts' },
+      { name: 'จัดการแผนก', path: '/manager/dept', icon: 'business' },
+      { name: 'กำหนดแผนกพนักงาน', path: '/manager/dept/unassigned', icon: 'person_add' },
     ]
   },
 ];
@@ -46,9 +46,10 @@ const USER_MENUS = [
 interface SidebarProps {
   user: UserInfo | null;
   role?: string;
+  unassignedCount?: number;
 }
 
-export default function Sidebar({ user, role }: SidebarProps) {
+export default function Sidebar({ user, role, unassignedCount = 0 }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -56,7 +57,17 @@ export default function Sidebar({ user, role }: SidebarProps) {
   const closeSidebar = () => setIsOpen(false);
   const toggleSidebar = () => setIsOpen(true);
 
-  const filteredMenus = role === 'user' ? USER_MENUS : ADMIN_MENUS;
+  // inject badge เข้า menu "กำหนดแผนกพนักงาน"
+  const adminMenusWithBadge = ADMIN_MENUS.map(group => ({
+    ...group,
+    children: group.children?.map(item =>
+      item.path === '/manager/dept/unassigned'
+        ? { ...item, badge: unassignedCount }
+        : item
+    ),
+  }));
+
+  const filteredMenus = role === 'user' ? USER_MENUS : adminMenusWithBadge;
 
   return (
     <>
@@ -70,10 +81,10 @@ export default function Sidebar({ user, role }: SidebarProps) {
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <SidebarHeader user={user} onClose={closeSidebar} />
-        <SidebarMenu 
-          menus={filteredMenus} 
-          currentPath={pathname} 
-          onMenuClick={(path) => handleMenuClick(path, router, closeSidebar)} 
+        <SidebarMenu
+          menus={filteredMenus}
+          currentPath={pathname}
+          onMenuClick={(path) => handleMenuClick(path, router, closeSidebar)}
         />
         <SidebarFooter onLogout={() => handleLogout(router)} />
       </aside>
