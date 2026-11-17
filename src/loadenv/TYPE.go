@@ -1,5 +1,7 @@
 package loadEnv
 
+import "time"
+
 type EmailConfig struct {
 	Email    string
 	Password string
@@ -27,4 +29,17 @@ type JWT struct {
 type AlertTargets struct {
 	CID   string
 	Email string
+}
+
+type HikDevice struct {
+	Name string
+	Host string
+}
+
+type HikvisionConfig struct {
+	User     string
+	Password string
+	Enabled  bool
+	Interval time.Duration
+	Devices  []HikDevice
 }

@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -105,6 +106,54 @@ func loadDepCheck() {
 			timeCheckDepts[id] = true
 		}
 	}
+}
+
+func LoadHikvision() HikvisionConfig {
+	v := strings.TrimSpace(os.Getenv("HIK_WORKER_ENABLED"))
+	enabled := v == "" || strings.ToLower(v) == "true" || v == "1"
+	return HikvisionConfig{
+		User:     os.Getenv("ISAPI_USER"),
+		Password: os.Getenv("ISAPI_PASSWORD"),
+		Enabled:  enabled,
+		Interval: parseInterval(os.Getenv("HIK_INTERVAL"), 10*time.Minute),
+		Devices:  parseDevices(os.Getenv("ISAPI_DEVICES")),
+	}
+}
+
+// parseInterval รองรับ: 10m, 1h, 30s, 1d (default ถ้า parse ไม่ได้)
+func parseInterval(s string, def time.Duration) time.Duration {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return def
+	}
+	if strings.HasSuffix(s, "d") {
+		if n, err := strconv.Atoi(strings.TrimSuffix(s, "d")); err == nil {
+			return time.Duration(n) * 24 * time.Hour
+		}
+	}
+	if d, err := time.ParseDuration(s); err == nil {
+		return d
+	}
+	return def
+}
+
+// parseDevices parse "ER:192.168.1.6,LR:192.168.1.7,..."
+func parseDevices(s string) []HikDevice {
+	var out []HikDevice
+	for _, raw := range strings.Split(s, ",") {
+		raw = strings.TrimSpace(raw)
+		if raw == "" {
+			continue
+		}
+		parts := strings.SplitN(raw, ":", 2)
+		if len(parts) == 2 {
+			out = append(out, HikDevice{
+				Name: strings.TrimSpace(parts[0]),
+				Host: strings.TrimSpace(parts[1]),
+			})
+		}
+	}
+	return out
 }
 
 func IsTimeCheckDept(deptID int64) bool {

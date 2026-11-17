@@ -73,6 +73,15 @@ func CreateTables(db *sql.DB) error {
 		status VARCHAR(20) NOT NULL DEFAULT 'success',
 		created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);
+
+	-- Table: hik_sync_logs
+	CREATE TABLE IF NOT EXISTS hik_sync_logs (
+		id BIGSERIAL PRIMARY KEY,
+		device_name VARCHAR(50) NOT NULL,
+		device_host VARCHAR(100) NOT NULL,
+		error_message TEXT NOT NULL,
+		created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);
 	`
 
 	_, err := db.Exec(schema)
