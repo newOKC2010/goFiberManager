@@ -37,6 +37,7 @@ func main() {
 	routes.SetupUploadRoutes(app, conn.DB)
 	routes.SetupEmpRoutes(app, conn.DB)
 	routes.SetupUserRoutes(app, conn.DB)
+	routes.SetupDeptRoutes(app, conn.DB)
 
 	log.Printf("Server started on port: %s", port)
 
