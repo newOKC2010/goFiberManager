@@ -22,11 +22,13 @@ export async function fetchEmpByDept(
   page = 1,
   limit = 10,
   hrEmpID = '',
-  deptFilter = ''
+  deptFilter = '',
+  fullName = ''
 ): Promise<EmpDeptListResponse> {
   const q = new URLSearchParams({ page: String(page), limit: String(limit) });
   if (hrEmpID) q.set('hr_emp_id', hrEmpID);
   if (deptFilter) q.set('dept_filter', deptFilter);
+  if (fullName) q.set('full_name', fullName);
   const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.DEPT.EMPLOYEES}?${q}`, { headers: authHeader() });
   if (!res.ok) throw new Error('ดึงข้อมูลไม่สำเร็จ');
   return res.json();

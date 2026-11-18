@@ -41,7 +41,9 @@ export default function UnassignedPage() {
   const [pagination, setPagination] = useState({ total_count: 0, total_pages: 1, current_page: 1 });
 
   const [hrEmpIDInput, setHrEmpIDInput] = useState('');
+  const [nameInput, setNameInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [nameQuery, setNameQuery] = useState('');
   const [deptFilter, setDeptFilter] = useState('');
   const [limit, setLimit] = useState('10');
 
@@ -51,25 +53,25 @@ export default function UnassignedPage() {
 
   const deptOptions = depts.map(d => ({ value: String(d.id), label: d.name }));
 
-  const load = useCallback(async (page = 1, lim = Number(limit), search = searchQuery, filter = deptFilter) => {
+  const load = useCallback(async (page = 1, lim = Number(limit), search = searchQuery, filter = deptFilter, name = nameQuery) => {
     setLoading(true);
     try {
-      const res = await fetchEmpByDept(page, lim, search, filter);
+      const res = await fetchEmpByDept(page, lim, search, filter, name);
       setData(res.data ?? []);
       setPagination({ total_count: res.total_count, total_pages: res.total_pages, current_page: res.current_page });
     } catch { setData([]); }
     finally { setLoading(false); }
-  }, [limit, searchQuery, deptFilter]);
+  }, [limit, searchQuery, deptFilter, nameQuery]);
 
   useEffect(() => {
     load();
     fetchDepartments(1, 0).then(res => setDepts(res.data ?? [])).catch(() => {});
   }, [load]);
 
-  const handleSearch = () => setSearchQuery(hrEmpIDInput);
-  const handleReset = () => { setHrEmpIDInput(''); setSearchQuery(''); setDeptFilter(''); };
-  const handleLimitChange = (val: string) => { setLimit(val); load(1, Number(val), searchQuery, deptFilter); };
-  const handleDeptFilter = (val: string) => { setDeptFilter(val); load(1, Number(limit), searchQuery, val); };
+  const handleSearch = () => { setSearchQuery(hrEmpIDInput); setNameQuery(nameInput); };
+  const handleReset = () => { setHrEmpIDInput(''); setNameInput(''); setSearchQuery(''); setNameQuery(''); setDeptFilter(''); };
+  const handleLimitChange = (val: string) => { setLimit(val); load(1, Number(val), searchQuery, deptFilter, nameQuery); };
+  const handleDeptFilter = (val: string) => { setDeptFilter(val); load(1, Number(limit), searchQuery, val, nameQuery); };
 
   const handleEditOpen = (emp: EmpDept) => {
     const existing = depts.find(d => d.name === emp.dept_name);
@@ -92,7 +94,7 @@ export default function UnassignedPage() {
       await assignDept(editRecord.hr_emp_id, Number(selectedDept), fullNameInput.trim());
       await Swal.fire({ icon: 'success', title: '<b>กำหนดแผนกสำเร็จ</b>', timer: 1500, showConfirmButton: false });
       setEditRecord(null);
-      load(pagination.current_page, Number(limit), searchQuery, deptFilter);
+      load(pagination.current_page, Number(limit), searchQuery, deptFilter, nameQuery);
       refreshCount();
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'เกิดข้อผิดพลาด';
@@ -117,6 +119,22 @@ export default function UnassignedPage() {
                 onKeyDown={e => e.key === 'Enter' && handleSearch()}
                 placeholder="รหัส HR"
                 className="w-full pl-10 pr-3 py-2 text-center font-bold text-black bg-transparent border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 placeholder:text-gray-600"
+                autoComplete="off"
+              />
+            </div>
+          </div>
+
+          <div className="flex-1 min-w-48 max-w-xs">
+            <label className="block text-sm font-bold text-gray-700 mb-2">ค้นหาชื่อ-นามสกุล</label>
+            <div className="relative">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg"
+                style={{ fontVariationSettings: "'wght' 700" }}>person_search</span>
+              <input
+                value={nameInput}
+                onChange={e => setNameInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                placeholder="ชื่อ-นามสกุล"
+                className="w-full pl-10 pr-3 py-2 font-bold text-black bg-transparent border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 placeholder:text-gray-600"
                 autoComplete="off"
               />
             </div>
