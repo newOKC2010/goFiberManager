@@ -15,11 +15,12 @@ func GetEmpByDept(db *sql.DB) fiber.Handler {
 		page, _ := strconv.Atoi(c.Query("page", "1"))
 		limit, _ := strconv.Atoi(c.Query("limit", "10"))
 		hrEmpID := c.Query("hr_emp_id", "")
+		fullName := c.Query("full_name", "")
 		deptFilter := c.Query("dept_filter", "")
 		if page < 1 {
 			page = 1
 		}
-		resp, err := service.GetEmpByDept(db, page, limit, hrEmpID, deptFilter)
+		resp, err := service.GetEmpByDept(db, page, limit, hrEmpID, deptFilter, fullName)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"message": "ดึงข้อมูลไม่สำเร็จ"})
 		}

@@ -10,7 +10,7 @@ import (
 )
 
 // deptFilter: ""=ทั้งหมด | "assigned"=มีแผนก | "unassigned"=ยังไม่มีแผนก
-func GetEmpByDept(db *sql.DB, page, limit int, hrEmpID, deptFilter string) (utils.EmpDeptListResponse, error) {
+func GetEmpByDept(db *sql.DB, page, limit int, hrEmpID, deptFilter, fullName string) (utils.EmpDeptListResponse, error) {
 	args := []any{}
 	where := `WHERE 1=1`
 	idx := 1
@@ -24,6 +24,11 @@ func GetEmpByDept(db *sql.DB, page, limit int, hrEmpID, deptFilter string) (util
 	if hrEmpID != "" {
 		where += fmt.Sprintf(` AND e.hr_emp_id = $%d`, idx)
 		args = append(args, hrEmpID)
+		idx++
+	}
+	if fullName != "" {
+		where += fmt.Sprintf(` AND e.full_name ILIKE $%d`, idx)
+		args = append(args, "%"+strings.TrimSpace(fullName)+"%")
 		idx++
 	}
 
